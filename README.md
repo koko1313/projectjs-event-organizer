@@ -21,11 +21,52 @@ EventOrganizer.createEvent({
 ```
 
 - **Добавяне на клиент**
-    ```javascript
-    EventOrganizer.createClient({
-        name: "Име Фамилия",
-        gender: "m", // m/f
-        age: 21,
-        money: 100.30,
-    });
-    ```
+```javascript
+EventOrganizer.createClient({
+    name: "Име Фамилия",
+    gender: "m", // m/f
+    age: 21,
+    money: 100.30,
+});
+```
+
+**Изтриване на събитие**
+```javascript
+EventOrganizer.deleteEvent(eventId);
+```
+
+**Добавяне на клиент към събитие**
+```javascript
+EventOrganizer.addClientToEvent(eventId, clientId);
+```
+
+**Премахване на клиент от събитие**
+```javascript
+EventOrganizer.removeClientFromEvent(eventId, clientId);
+```
+
+**Архивиране на събитие**
+```javascript
+EventOrganizer.archiveEvent(eventId);
+```
+
+**Промяна на име на събитие**
+```javascript
+EventOrganizer.changeEventName(eventId, "Ново име");
+```
+
+**Промяна на възрастова група на събитие**
+```javascript
+EventOrganizer.changeEventAgeGroup(eventId, true); // true - за пълнолетни / false - за непълнолетни
+```
+
+**Промяна на възрастова група на събитие**
+```javascript
+EventOrganizer.changeEventDate(eventId, "2019-02-18");
+EventOrganizer.changeEventDate(eventId, ""); // премахване на дата на събитие (задаване на дата в невалиден формат също премахва датата)
+```
+
+**Оценяване на събитие**
+```javascript
+EventOrganizer.rateEvent(eventId, clientId, rating);
+```
