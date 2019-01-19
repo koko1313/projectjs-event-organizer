@@ -95,6 +95,6 @@ EventOrganizer.removeClientFromEvent(eventId, clientId);
 **Показване на лист с всички клиенти, които ще посетят дадено събитие**
 ```javascript
 EventOrganizer.showClientListForEvent(eventId);
-//EventOrganizer.showClientListForEvent(eventId, "m"); // само мъжете
-//EventOrganizer.showClientListForEvent(eventId, "f"); // само жените
+EventOrganizer.showClientListForEvent(eventId, "m"); // само мъжете
+EventOrganizer.showClientListForEvent(eventId, "f"); // само жените
 ```
