@@ -1,4 +1,4 @@
-# projectjs-event-organizer
+# Органайзер на събития
 
 Университетски проект по "JavaScript в дълбочина".
 
@@ -57,6 +57,16 @@ EventOrganizer.changeEventDate(eventId, "2019-02-18");
 EventOrganizer.changeEventDate(eventId, ""); // премахване на дата на събитие (задаване на дата в невалиден формат също премахва датата)
 ```
 
+**Оценяване на събитие**
+```javascript
+EventOrganizer.rateEvent(eventId, clientId, rating);
+```
+
+**Показване на събитието с най-много клиенти**
+```javascript
+EventOrganizer.showAllClients();
+```
+
 - **Добавяне на клиент**
 ```javascript
 EventOrganizer.createClient({
@@ -87,14 +97,4 @@ EventOrganizer.removeClientFromEvent(eventId, clientId);
 EventOrganizer.showClientListForEvent(eventId);
 //EventOrganizer.showClientListForEvent(eventId, "m"); // само мъжете
 //EventOrganizer.showClientListForEvent(eventId, "f"); // само жените
-```
-
-**Оценяване на събитие**
-```javascript
-EventOrganizer.rateEvent(eventId, clientId, rating);
-```
-
-**Показване на събитието с най-много клиенти**
-```javascript
-EventOrganizer.showAllClients();
 ```
