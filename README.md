@@ -11,11 +11,11 @@
 
 ## Функционалности:
 - **Добавяне на клиент**
-```
-EventOrganizer.createClient({
-    name: "Име Фамилия",
-    gender: "m",
-    age: 21,
-    money: 100.30, 
-});
-```
+    ```javascript
+    EventOrganizer.createClient({
+        name: "Име Фамилия",
+        gender: "m", // m/f
+        age: 21,
+        money: 100.30,
+    });
+    ```
