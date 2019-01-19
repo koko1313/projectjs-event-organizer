@@ -80,7 +80,10 @@ var EventOrganizer = {
                         continue;
                     }
                     break;
-
+                default :
+                    if(filter != undefined && currentEvent.name != filter) {
+                        continue;
+                    }
             }
                 
             eventInfoString += this.printEventInfo(currentEvent.id);

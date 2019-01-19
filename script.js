@@ -104,7 +104,7 @@ EventOrganizer.showAllEvents();
 //EventOrganizer.showAllEvents("grouped"); // групирани - за пълнолетни(*) и за непълнолетни(#)
 //EventOrganizer.showAllEvents("upcoming"); // предстоящи
 //EventOrganizer.showAllEvents("archived"); // архивирани
-//EventOrganizer.showAllEvents("Just Party For Adults"); // събитие със зададено име
+//EventOrganizer.showAllEvents("Just Party"); // събитие със зададено име
 //EventOrganizer.showAllEvents("forAdults"); // всички събития за пълнолетни
 //EventOrganizer.showAllEvents("forAll"); // всички събития, подходящи за НЕпълнолетни
 
