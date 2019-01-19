@@ -32,13 +32,16 @@ var EventOrganizer = {
             isForAdults: eventInfo.isForAdults,
             price: eventInfo.price,
             date: new Date(eventInfo.date),
+            isArchived: false,
+            totalIncome: 0,
+            totalRating: 0,
             clientsCollection: [],
         }
 
         EventOrganizerDB.insertEvent(event);
     },
 
-    showAllEvents: function(grouped) {
+    showAllEvents: function(filter) {
         if(EventOrganizerDB.eventsCollection.length == 0) {
             console.log("Няма събития.");
             return;
@@ -49,24 +52,53 @@ var EventOrganizer = {
 
             var eventInfoString = "";
 
-            if(grouped == true) {
-                if(currentEvent.isForAdults) {
-                    eventInfoString += "*";
-                } else {
-                    eventInfoString += "#";
-                }
+            switch(filter) {
+                case "upcoming" :
+                    if(currentEvent.isArchived) {
+                        continue;
+                    }
+                    break;
+                case "archived" : 
+                    if(!currentEvent.isArchived) {
+                        continue;
+                    }
+                    break;
+                case "grouped" :
+                    if(currentEvent.isForAdults) {
+                        eventInfoString += "*";
+                    } else {
+                        eventInfoString += "#";
+                    }
+                    break;
+                case "forAdults" :
+                    if(!currentEvent.isForAdults) {
+                        continue;
+                    }
+                    break;
+                case "forAll" :
+                    if(currentEvent.isForAdults) {
+                        continue;
+                    }
+                    break;
+
             }
-
+                
             eventInfoString += this.printEventInfo(currentEvent.id);
-
             console.log(eventInfoString);
         }
     },
 
-    deleteEvent: function(id) {
+    deleteEvent: function(eventId) {
         for(var i=0; i<EventOrganizerDB.eventsCollection.length; i++) {
-            if(EventOrganizerDB.eventsCollection[i].id == id) {
-                console.log("Събитието '" + EventOrganizerDB.eventsCollection[i].name + "' беше изтрито.");
+            var event = EventOrganizerDB.eventsCollection[i];
+
+            if(event.id == eventId) {
+                if(event.isArchived) {
+                    console.log("Събитието '" + event.name + "' не може да бъде изтрито, защото е архивирано.");
+                    return;
+                }
+
+                console.log("Събитието '" + event.name + "' беше изтрито.");
                 EventOrganizerDB.eventsCollection.splice(i, 1);
                 return;
             }
@@ -118,6 +150,11 @@ var EventOrganizer = {
         event = EventOrganizerDB.selectEventById(eventId);
         client = EventOrganizerDB.selectClientById(clientId);
 
+        if(event.isArchived) {
+            console.log("Не може да добавяте клиенти към събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
+
         if(event != undefined && client != undefined) {
             if(event.isForAdults) {
                 if(client.age < 18) {
@@ -139,6 +176,7 @@ var EventOrganizer = {
                     if(client.isVip) {
                         client.money -= event.price;
                     }
+                    event.totalIncome += event.price;
                 } else {
                     console.log("Клиента " + client.name + " няма достатъчно пари за да посети събитието '" + event.name + "'. Не и достигат " + (event.price-client.money) + "лв.");
                     return;
@@ -157,6 +195,12 @@ var EventOrganizer = {
 
     removeClientFromEvent: function(eventId, clientId) {
         event = EventOrganizerDB.selectEventById(eventId);
+
+        if(event.isArchived) {
+            console.log("Не може да премахвате клиенти от събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
+
         for(var i=0; i<event.clientsCollection.length; i++) {
             if(event.clientsCollection[i].id == clientId) {
                 event.clientsCollection.splice(i, 1);
@@ -165,6 +209,9 @@ var EventOrganizer = {
                 var client = EventOrganizerDB.selectClientById(clientId);
                 client.money += event.price;
                 client.visitedEvents--;
+
+                // махаме сумата на клиента от общия приход на събитието
+                event.totalIncome -= event.price;
             }
         }
     },
@@ -183,6 +230,10 @@ var EventOrganizer = {
         }
 
         var identifier;
+
+        if(event.isArchived) {
+            identifier = "~";
+        } else
         if(event.price > 0) {
             identifier = "$";
         } else 
@@ -190,7 +241,16 @@ var EventOrganizer = {
             identifier = "!";
         }
 
-        var eventInfo = event.id + ". " + identifier +  event.name + ": " + isForAdultsString + ". " + event.price + "лв. " + date;
+        var rating;
+
+        if(event.isArchived) {
+            // смятаме рейтинга и го преобразуваме от min(0)-max(10) към min(0)-max(6)
+            var rating = (event.totalRating/event.clientsCollection.length) * 6/10;
+        } else {
+            rating = "Предстои актуализация за рейтинга";
+        }
+
+        var eventInfo = event.id + ". " + identifier +  event.name + ": " + isForAdultsString + ". " + event.price + "лв. " + "Общ приход: " + event.totalIncome + "лв. Рейтинг: " + rating + ". " + date;
         return eventInfo;
     },
 
@@ -222,6 +282,11 @@ var EventOrganizer = {
     changeEventName: function(eventId, nameParam) {
         var event = EventOrganizerDB.selectEventById(eventId);
 
+        if(event.isArchived) {
+            console.log("Не може да сменяте името на събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
+
         if(event == undefined || nameParam == undefined) return;
 
         console.log("Името на събитието '" + event.name + "' беше сменено на '" + nameParam + "'.");
@@ -230,6 +295,11 @@ var EventOrganizer = {
 
     changeEventAgeGroup: function(eventId, isForAdultsParam) {
         var event = EventOrganizerDB.selectEventById(eventId);
+
+        if(event.isArchived) {
+            console.log("Не може да променяте възрастовата група на събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
 
         if(event == undefined || isForAdultsParam == undefined) return;
 
@@ -243,10 +313,27 @@ var EventOrganizer = {
     changeEventDate: function(eventId, dateParam) {
         var event = EventOrganizerDB.selectEventById(eventId);
 
+        if(event.isArchived) {
+            console.log("Не може да променяте датата на събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
+
         if(event == undefined || dateParam == undefined) return;
 
         console.log("Датата на събитието '" + event.name + "' беше променена.");
         event.date = new Date(dateParam);
+    },
+
+    changeEventPrice: function(eventId, priceParam) {
+        var event = EventOrganizerDB.selectEventById(eventId);
+
+        if(event.isArchived) {
+            console.log("Не може да променяте цената на събитието '" + event.name + "', защото е архивирано.");
+            return;
+        }
+
+        console.log("Цената на събитието '" + event.name + "' беше променена.");
+        event.price = priceParam;
     },
 
     removeAllChildsFromEvent: function(event) {
@@ -282,23 +369,36 @@ var EventOrganizer = {
         console.log("Събитието '" + eventWithTheMostClients.name + "' има най-много клиенти - " + eventWithTheMostClients.clientsCollection.length)
     },
 
-    showFilteredEvents: function(filter) {
-        if(typeof filter == "boolean") {
-            for(var i=0; i<EventOrganizerDB.eventsCollection.length; i++) {
-                var currentEvent = EventOrganizerDB.eventsCollection[i];
-                if(currentEvent.isForAdults == filter) {
-                    console.log(this.printEventInfo(currentEvent.id));
-                }
-            }
-        } else 
-        if(typeof filter == "string") {
-            for(var i=0; i<EventOrganizerDB.eventsCollection.length; i++) {
-                var currentEvent = EventOrganizerDB.eventsCollection[i];
-                if(currentEvent.name == filter) {
-                    console.log(this.printEventInfo(currentEvent.id));
-                }
+    archiveEvent: function(eventId) {
+        var event = EventOrganizerDB.selectEventById(eventId);
+
+        if(event == undefined) {
+            return;
+        }
+
+        event.isArchived = true;
+    },
+
+    rateEvent: function(eventId, clientId, rating) {
+        var event = EventOrganizerDB.selectEventById(eventId);
+        var client = EventOrganizerDB.selectClientById(clientId);
+
+        if(!event.isArchived) {
+            return;
+        }
+
+        var wasClient = false; // дали клиента е бил посетител на събитието
+        for(var i=0; i<event.clientsCollection.length; i++) {
+            var currentClient = event.clientsCollection[i];
+            if(currentClient == client) {
+                wasClient = true;
+                break;
             }
         }
-    },
+
+        if(wasClient) {
+            event.totalRating += rating;
+        }
+    }
 
 };

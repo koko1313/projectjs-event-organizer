@@ -7,6 +7,13 @@ EventOrganizer.createClient({
 });
 
 EventOrganizer.createClient({
+    name: "Валентин Йорданов",
+    gender: "m",
+    age: 23,
+    money: 20, 
+});
+
+EventOrganizer.createClient({
     name: "Иван Иванов",
     gender: "m",
     age: 18,
@@ -71,6 +78,9 @@ EventOrganizer.addClientToEvent(1, 2);
 EventOrganizer.addClientToEvent(1, 3);
 EventOrganizer.addClientToEvent(1, 4);
 
+// Архивиране на събитие
+EventOrganizer.archiveEvent(1);
+
 // Премахване на клиенти от събитие
 //EventOrganizer.removeClientFromEvent(1, 2);
 
@@ -84,21 +94,26 @@ EventOrganizer.changeEventAgeGroup(1, true);
 EventOrganizer.changeEventDate(4, "2019-02-18");
 EventOrganizer.changeEventDate(1, ""); // премахване на дата на събитие (задаване на дата в невалиден формат също премахва датата)
 
+// Оценяване на събитие
+EventOrganizer.rateEvent(1, 2, 4); // id на събитие, id на клиент, рейтинг
+EventOrganizer.rateEvent(1, 3, 5);
+EventOrganizer.rateEvent(1, 4, 6);
+
 // Показване на всички събития
-//EventOrganizer.showAllEvents();
-EventOrganizer.showAllEvents(true); // групирани - за пълнолетни(*) и за непълнолетни(#)
-//EventOrganizer.showFilteredEvents("Just Party For Adults"); // събитие със зададено име
-//EventOrganizer.showFilteredEvents(true); // всички събития за пълнолетни
-//EventOrganizer.showFilteredEvents(false); // всички събития за не пълнолетни
+EventOrganizer.showAllEvents();
+//EventOrganizer.showAllEvents("grouped"); // групирани - за пълнолетни(*) и за непълнолетни(#)
+//EventOrganizer.showAllEvents("upcoming"); // предстоящи
+//EventOrganizer.showAllEvents("archived"); // архивирани
+//EventOrganizer.showAllEvents("Just Party For Adults"); // събитие със зададено име
+//EventOrganizer.showAllEvents("forAdults"); // всички събития за пълнолетни
+//EventOrganizer.showAllEvents("forAll"); // всички събития, подходящи за НЕпълнолетни
 
 // Показване на всички клиенти за дадено събитие
 EventOrganizer.showClientListForEvent(1);
 //EventOrganizer.showClientListForEvent(1, "f"); // само жените
 
 // Показване на всички клиенти в системата
-console.log("--");
-EventOrganizer.showAllClients();
-console.log("--");
+//EventOrganizer.showAllClients();
 
 // Показване на събитието с най-много клиенти
 //EventOrganizer.showEventWithTheMostClients();
