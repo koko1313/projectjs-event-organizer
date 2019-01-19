@@ -20,16 +20,6 @@ EventOrganizer.createEvent({
 });
 ```
 
-- **Добавяне на клиент**
-```javascript
-EventOrganizer.createClient({
-    name: "Име Фамилия",
-    gender: "m", // m/f
-    age: 21,
-    money: 100.30,
-});
-```
-
 **Изтриване на събитие**
 ```javascript
 EventOrganizer.deleteEvent(eventId);
@@ -41,19 +31,9 @@ EventOrganizer.showAllEvents(); // показва всички
 EventOrganizer.showAllEvents("grouped"); // групирани - за пълнолетни(*) и за непълнолетни(#)
 EventOrganizer.showAllEvents("upcoming"); // предстоящи
 EventOrganizer.showAllEvents("archived"); // архивирани
-EventOrganizer.showAllEvents("Just Party For Adults"); // събитие със зададено име
+EventOrganizer.showAllEvents("Име на събитие"); // събитие със зададено име
 EventOrganizer.showAllEvents("forAdults"); // всички събития за пълнолетни
 EventOrganizer.showAllEvents("forAll"); // всички събития, подходящи за НЕпълнолетни
-```
-
-**Добавяне на клиент към събитие**
-```javascript
-EventOrganizer.addClientToEvent(eventId, clientId);
-```
-
-**Премахване на клиент от събитие**
-```javascript
-EventOrganizer.removeClientFromEvent(eventId, clientId);
 ```
 
 **Архивиране на събитие**
@@ -71,13 +51,50 @@ EventOrganizer.changeEventName(eventId, "Ново име");
 EventOrganizer.changeEventAgeGroup(eventId, true); // true - за пълнолетни / false - за непълнолетни
 ```
 
-**Промяна на възрастова група на събитие**
+**Промяна на дата на събитие**
 ```javascript
 EventOrganizer.changeEventDate(eventId, "2019-02-18");
 EventOrganizer.changeEventDate(eventId, ""); // премахване на дата на събитие (задаване на дата в невалиден формат също премахва датата)
 ```
 
+- **Добавяне на клиент**
+```javascript
+EventOrganizer.createClient({
+    name: "Име Фамилия",
+    gender: "m", // m/f
+    age: 21,
+    money: 100.30,
+});
+```
+
+**Показване на лист с всички клиенти на системата**
+```javascript
+EventOrganizer.showAllClients();
+```
+
+**Добавяне на клиент към събитие**
+```javascript
+EventOrganizer.addClientToEvent(eventId, clientId);
+```
+
+**Премахване на клиент от събитие**
+```javascript
+EventOrganizer.removeClientFromEvent(eventId, clientId);
+```
+
+**Показване на лист с всички клиенти, които ще посетят дадено събитие**
+```javascript
+EventOrganizer.showClientListForEvent(eventId);
+//EventOrganizer.showClientListForEvent(eventId, "m"); // само мъжете
+//EventOrganizer.showClientListForEvent(eventId, "f"); // само жените
+```
+
 **Оценяване на събитие**
 ```javascript
 EventOrganizer.rateEvent(eventId, clientId, rating);
+```
+
+**Показване на събитието с най-много клиенти**
+```javascript
+EventOrganizer.showAllClients();
 ```
