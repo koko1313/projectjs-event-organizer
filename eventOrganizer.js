@@ -387,6 +387,10 @@ var EventOrganizer = {
             return;
         }
 
+        if(rating<0 || rating >10) {
+            return;
+        }
+
         var wasClient = false; // дали клиента е бил посетител на събитието
         for(var i=0; i<event.clientsCollection.length; i++) {
             var currentClient = event.clientsCollection[i];
