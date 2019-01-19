@@ -35,6 +35,17 @@ EventOrganizer.createClient({
 EventOrganizer.deleteEvent(eventId);
 ```
 
+**Показване на лист с всички събития**
+```javascript
+EventOrganizer.showAllEvents(); // показва всички
+EventOrganizer.showAllEvents("grouped"); // групирани - за пълнолетни(*) и за непълнолетни(#)
+EventOrganizer.showAllEvents("upcoming"); // предстоящи
+EventOrganizer.showAllEvents("archived"); // архивирани
+EventOrganizer.showAllEvents("Just Party For Adults"); // събитие със зададено име
+EventOrganizer.showAllEvents("forAdults"); // всички събития за пълнолетни
+EventOrganizer.showAllEvents("forAll"); // всички събития, подходящи за НЕпълнолетни
+```
+
 **Добавяне на клиент към събитие**
 ```javascript
 EventOrganizer.addClientToEvent(eventId, clientId);
