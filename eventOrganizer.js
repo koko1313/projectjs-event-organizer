@@ -150,8 +150,8 @@ var EventOrganizer = {
     },
 
     addClientToEvent: function(eventId, clientId) {
-        event = EventOrganizerDB.selectEventById(eventId);
-        client = EventOrganizerDB.selectClientById(clientId);
+        event = EventOrganizerDB.getEventById(eventId);
+        client = EventOrganizerDB.getClientById(clientId);
 
         if(event.isArchived) {
             console.log("Не може да добавяте клиенти към събитието '" + event.name + "', защото е архивирано.");
@@ -197,7 +197,7 @@ var EventOrganizer = {
     },
 
     removeClientFromEvent: function(eventId, clientId) {
-        event = EventOrganizerDB.selectEventById(eventId);
+        event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
             console.log("Не може да премахвате клиенти от събитието '" + event.name + "', защото е архивирано.");
@@ -209,7 +209,7 @@ var EventOrganizer = {
                 event.clientsCollection.splice(i, 1);
 
                 // връщаме парите на клиента
-                var client = EventOrganizerDB.selectClientById(clientId);
+                var client = EventOrganizerDB.getClientById(clientId);
                 client.money += event.price;
                 client.visitedEvents--;
 
@@ -220,7 +220,7 @@ var EventOrganizer = {
     },
 
     printEventInfo: function(eventId) {
-        event = EventOrganizerDB.selectEventById(eventId);
+        event = EventOrganizerDB.getEventById(eventId);
 
         var isForAdultsString = "За всички";
         if(event.isForAdults) {
@@ -258,7 +258,7 @@ var EventOrganizer = {
     },
 
     printClientInfo: function(clientId) {
-        var client = EventOrganizerDB.selectClientById(clientId);
+        var client = EventOrganizerDB.getClientById(clientId);
 
         var isVip = "";
         if(client.isVip) {
@@ -270,7 +270,7 @@ var EventOrganizer = {
     },
 
     showClientListForEvent: function(eventId, gender) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event == undefined) return;
 
@@ -283,7 +283,7 @@ var EventOrganizer = {
     },
 
     changeEventName: function(eventId, nameParam) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
             console.log("Не може да сменяте името на събитието '" + event.name + "', защото е архивирано.");
@@ -297,7 +297,7 @@ var EventOrganizer = {
     },
 
     changeEventAgeGroup: function(eventId, isForAdultsParam) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
             console.log("Не може да променяте възрастовата група на събитието '" + event.name + "', защото е архивирано.");
@@ -314,7 +314,7 @@ var EventOrganizer = {
     },
 
     changeEventDate: function(eventId, dateParam) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
             console.log("Не може да променяте датата на събитието '" + event.name + "', защото е архивирано.");
@@ -328,7 +328,7 @@ var EventOrganizer = {
     },
 
     changeEventPrice: function(eventId, priceParam) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
             console.log("Не може да променяте цената на събитието '" + event.name + "', защото е архивирано.");
@@ -373,7 +373,7 @@ var EventOrganizer = {
     },
 
     archiveEvent: function(eventId) {
-        var event = EventOrganizerDB.selectEventById(eventId);
+        var event = EventOrganizerDB.getEventById(eventId);
 
         if(event == undefined) {
             return;
@@ -383,8 +383,8 @@ var EventOrganizer = {
     },
 
     rateEvent: function(eventId, clientId, rating) {
-        var event = EventOrganizerDB.selectEventById(eventId);
-        var client = EventOrganizerDB.selectClientById(clientId);
+        var event = EventOrganizerDB.getEventById(eventId);
+        var client = EventOrganizerDB.getClientById(clientId);
 
         if(!event.isArchived) {
             return;

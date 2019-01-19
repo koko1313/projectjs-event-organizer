@@ -18,7 +18,7 @@ var EventOrganizerDB = {
         this.nextClientId++;
     },
 
-    selectEventById: function(id) {
+    getEventById: function(id) {
         for(var i=0; i<this.eventsCollection.length; i++) {
             var currentEvent = this.eventsCollection[i];
             if(currentEvent.id == id) {
@@ -27,7 +27,7 @@ var EventOrganizerDB = {
         }
     },
 
-    selectClientById: function(id) {
+    getClientById: function(id) {
         for(var i=0; i<this.clientsCollection.length; i++) {
             var currentClient = this.clientsCollection[i];
             if(currentClient.id == id) {
