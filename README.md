@@ -57,6 +57,11 @@ EventOrganizer.changeEventDate(eventId, "2019-02-18");
 EventOrganizer.changeEventDate(eventId, ""); // премахване на дата на събитие (задаване на дата в невалиден формат също премахва датата)
 ```
 
+**Промяна на цена на събитие**
+```javascript
+EventOrganizer.changeEventPrice(eventId, 20);
+```
+
 **Оценяване на събитие**
 ```javascript
 EventOrganizer.rateEvent(eventId, clientId, rating);
@@ -67,7 +72,7 @@ EventOrganizer.rateEvent(eventId, clientId, rating);
 EventOrganizer.showAllClients();
 ```
 
-- **Добавяне на клиент**
+**Добавяне на клиент**
 ```javascript
 EventOrganizer.createClient({
     name: "Име Фамилия",
