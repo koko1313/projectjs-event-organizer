@@ -120,7 +120,7 @@ var EventOrganizer = {
         event.isArchived = true;
     },
 
-    changeEventName: function(eventId, nameParam) {
+    changeEventName: function(eventId, eventName) {
         var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
@@ -128,13 +128,13 @@ var EventOrganizer = {
             return;
         }
 
-        if(event == undefined || nameParam == undefined) return;
+        if(event == undefined || eventName == undefined) return;
 
-        console.log("Името на събитието '" + event.name + "' беше сменено на '" + nameParam + "'.");
-        event.name = nameParam;
+        console.log("Името на събитието '" + event.name + "' беше сменено на '" + eventName + "'.");
+        event.name = eventName;
     },
 
-    changeEventAgeGroup: function(eventId, isForAdultsParam) {
+    changeEventAgeGroup: function(eventId, isForAdults) {
         var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
@@ -142,16 +142,16 @@ var EventOrganizer = {
             return;
         }
 
-        if(event == undefined || isForAdultsParam == undefined) return;
+        if(event == undefined || isForAdults == undefined) return;
 
         console.log("Възрастовата група на събитието '" + event.name + "' беше сменена. Възрастовата група на клиентите беше променена и всички неподходящи клиенти бяха премахнати.");
-        event.isForAdults = isForAdultsParam;
-        if(isForAdultsParam) {
+        event.isForAdults = isForAdults;
+        if(isForAdults) {
             this.removeAllChildsFromEvent(event);
         }
     },
 
-    changeEventDate: function(eventId, dateParam) {
+    changeEventDate: function(eventId, eventDate) {
         var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
@@ -159,13 +159,13 @@ var EventOrganizer = {
             return;
         }
 
-        if(event == undefined || dateParam == undefined) return;
+        if(event == undefined || eventDate == undefined) return;
 
         console.log("Датата на събитието '" + event.name + "' беше променена.");
-        event.date = new Date(dateParam);
+        event.date = new Date(eventDate);
     },
 
-    changeEventPrice: function(eventId, priceParam) {
+    changeEventPrice: function(eventId, eventPrice) {
         var event = EventOrganizerDB.getEventById(eventId);
 
         if(event.isArchived) {
@@ -174,7 +174,7 @@ var EventOrganizer = {
         }
 
         console.log("Цената на събитието '" + event.name + "' беше променена.");
-        event.price = priceParam;
+        event.price = eventPrice;
     },
 
     rateEvent: function(eventId, clientId, rating) {
@@ -329,7 +329,7 @@ var EventOrganizer = {
 
     
 
-    
+
     // Общи ##################################################
 
     addClientToEvent: function(eventId, clientId) {
