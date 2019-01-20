@@ -41,6 +41,7 @@ var EventOrganizer = {
         }
 
         EventOrganizerDB.insertEvent(event);
+        console.log("Събитието '" + event.name + "' беше добавено.");
     },
 
     deleteEvent: function(eventId) {
@@ -58,6 +59,8 @@ var EventOrganizer = {
                 return;
             }
         }
+
+        console.log("Събитието не беше намерено.");
     },
 
     showAllEvents: function(filter) {
@@ -114,14 +117,21 @@ var EventOrganizer = {
         var event = EventOrganizerDB.getEventById(eventId);
 
         if(event == undefined) {
+            console.log("Събитието не беше намерено.");
             return;
         }
 
         event.isArchived = true;
+        console.log("Събитието '" + event.name + "' беше архивирано.");
     },
 
     changeEventName: function(eventId, eventName) {
         var event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         if(event.isArchived) {
             console.log("Не може да сменяте името на събитието '" + event.name + "', защото е архивирано.");
@@ -130,12 +140,17 @@ var EventOrganizer = {
 
         if(event == undefined || eventName == undefined) return;
 
-        console.log("Името на събитието '" + event.name + "' беше сменено на '" + eventName + "'.");
         event.name = eventName;
+        console.log("Името на събитието '" + event.name + "' беше сменено на '" + eventName + "'.");
     },
 
     changeEventAgeGroup: function(eventId, isForAdults) {
         var event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         if(event.isArchived) {
             console.log("Не може да променяте възрастовата група на събитието '" + event.name + "', защото е архивирано.");
@@ -144,15 +159,20 @@ var EventOrganizer = {
 
         if(event == undefined || isForAdults == undefined) return;
 
-        console.log("Възрастовата група на събитието '" + event.name + "' беше сменена. Възрастовата група на клиентите беше променена и всички неподходящи клиенти бяха премахнати.");
         event.isForAdults = isForAdults;
         if(isForAdults) {
             this.removeAllChildsFromEvent(event);
         }
+        console.log("Възрастовата група на събитието '" + event.name + "' беше сменена. Възрастовата група на клиентите беше променена и всички неподходящи клиенти бяха премахнати.");
     },
 
     changeEventDate: function(eventId, eventDate) {
         var event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         if(event.isArchived) {
             console.log("Не може да променяте датата на събитието '" + event.name + "', защото е архивирано.");
@@ -160,32 +180,49 @@ var EventOrganizer = {
         }
 
         if(event == undefined || eventDate == undefined) return;
-
-        console.log("Датата на събитието '" + event.name + "' беше променена.");
+        
         event.date = new Date(eventDate);
+        console.log("Датата на събитието '" + event.name + "' беше променена.");
     },
 
     changeEventPrice: function(eventId, eventPrice) {
         var event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         if(event.isArchived) {
             console.log("Не може да променяте цената на събитието '" + event.name + "', защото е архивирано.");
             return;
         }
 
-        console.log("Цената на събитието '" + event.name + "' беше променена.");
         event.price = eventPrice;
+        console.log("Цената на събитието '" + event.name + "' беше променена.");
     },
 
     rateEvent: function(eventId, clientId, rating) {
         var event = EventOrganizerDB.getEventById(eventId);
         var client = EventOrganizerDB.getClientById(clientId);
 
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
+
+        if(client == undefined) {
+            console.log("Клиента не беше намерен.");
+            return;
+        }
+
         if(!event.isArchived) {
+            console.log("Събитието '" + event.name + "' не може да бъде оценено, защото не е архивирано.");
             return;
         }
 
         if(rating<0 || rating >10) {
+            console.log("Неуспешно. Рейтинга трябва да бъде между 0 и 10");
             return;
         }
 
@@ -200,7 +237,11 @@ var EventOrganizer = {
 
         if(wasClient) {
             event.totalRating += rating;
+            console.log("Клиента '" + client.name + "' оцени събитието '" + event.name + "' с рейтинг " + rating);
+            return;
         }
+
+        console.log("Клиента не може да оцени събитието, защото не го е посетил.")
     },
 
     showEventWithTheMostClients: function() {
@@ -299,6 +340,7 @@ var EventOrganizer = {
         }
 
         EventOrganizerDB.insertClient(client);
+        console.log("Клиента '" + client.name + "' беше добавен успешно.");
     },
 
     showAllClients: function() {
@@ -336,6 +378,16 @@ var EventOrganizer = {
         event = EventOrganizerDB.getEventById(eventId);
         client = EventOrganizerDB.getClientById(clientId);
 
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
+
+        if(client == undefined) {
+            console.log("Клиента не беше намерен.");
+            return;
+        }
+
         if(event.isArchived) {
             console.log("Не може да добавяте клиенти към събитието '" + event.name + "', защото е архивирано.");
             return;
@@ -350,8 +402,7 @@ var EventOrganizer = {
             }
 
             // проверяваме колко събития е посетил клиента (за да го направим VIP)
-            client.visitedEvents++;
-            if(client.visitedEvents > 5) {
+            if(client.visitedEvents == 5) {
                 client.isVip = true;
             }
             
@@ -359,15 +410,17 @@ var EventOrganizer = {
             // ако събитието е платено
             if(event.price > 0) {
                 if(client.money > event.price) {
-                    if(client.isVip) {
+                    if(!client.isVip) {
                         client.money -= event.price;
+                        event.totalIncome += event.price;
                     }
-                    event.totalIncome += event.price;
                 } else {
                     console.log("Клиента " + client.name + " няма достатъчно пари за да посети събитието '" + event.name + "'. Не му достигат " + (event.price-client.money) + "лв.");
                     return;
                 }
             }
+
+            client.visitedEvents++;
 
             // нулираме посещенията ако са повече от 5
             if(client.visitedEvents > 5) {
@@ -376,11 +429,17 @@ var EventOrganizer = {
             }
 
             event.clientsCollection.push(client);
+            console.log("Клиента '" + client.name + "' ще посети събитието '" + event.name + "'");
         }
     },
 
     removeClientFromEvent: function(eventId, clientId) {
         event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         if(event.isArchived) {
             console.log("Не може да премахвате клиенти от събитието '" + event.name + "', защото е архивирано.");
@@ -398,14 +457,22 @@ var EventOrganizer = {
 
                 // махаме сумата на клиента от общия приход на събитието
                 event.totalIncome -= event.price;
+
+                console.log("Клиента '" + client.name + "' беше премахнат от събитието '" + event.name + "'. Беше му върната сумата от " + event.price + " лв")
+                return;
             }
+
+            console.log("Клиента не беше намерен в списъка на посетителите на събитието.");
         }
     },
 
     showClientListForEvent: function(eventId, gender) {
         var event = EventOrganizerDB.getEventById(eventId);
 
-        if(event == undefined) return;
+        if(event == undefined) {
+            console.log("Събитието не беше намерено.");
+            return;
+        }
 
         for(var i = 0; i<event.clientsCollection.length; i++) {
             var client = event.clientsCollection[i];
