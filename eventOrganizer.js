@@ -1,5 +1,7 @@
 var EventOrganizer = {
 
+    // Събития ###############################################
+
     /**
      * 
      * Получава колекция от вида
@@ -39,6 +41,23 @@ var EventOrganizer = {
         }
 
         EventOrganizerDB.insertEvent(event);
+    },
+
+    deleteEvent: function(eventId) {
+        for(var i=0; i<EventOrganizerDB.eventsCollection.length; i++) {
+            var event = EventOrganizerDB.eventsCollection[i];
+
+            if(event.id == eventId) {
+                if(event.isArchived) {
+                    console.log("Събитието '" + event.name + "' не може да бъде изтрито, защото е архивирано.");
+                    return;
+                }
+
+                console.log("Събитието '" + event.name + "' беше изтрито.");
+                EventOrganizerDB.eventsCollection.splice(i, 1);
+                return;
+            }
+        }
     },
 
     showAllEvents: function(filter) {
@@ -91,195 +110,14 @@ var EventOrganizer = {
         }
     },
 
-    deleteEvent: function(eventId) {
-        for(var i=0; i<EventOrganizerDB.eventsCollection.length; i++) {
-            var event = EventOrganizerDB.eventsCollection[i];
-
-            if(event.id == eventId) {
-                if(event.isArchived) {
-                    console.log("Събитието '" + event.name + "' не може да бъде изтрито, защото е архивирано.");
-                    return;
-                }
-
-                console.log("Събитието '" + event.name + "' беше изтрито.");
-                EventOrganizerDB.eventsCollection.splice(i, 1);
-                return;
-            }
-        }
-    },
-
-    /**
-     * 
-     * Получава колекция от вида
-     * 
-     * var collection = {
-     *   name: "Име Фамилия",
-     *   gender: m/f,
-     *   age: 12,
-     *   moeny: 100.30, 
-     * }
-     */
-    createClient: function(clientInfo) {
-        if(EventOrganizerConfig.SYSTEM_CLOSED) {
-            console.log("Не може да добавите клиент. Системата е затворена.");
-            return;
-        }
-
-        var client = {
-            name: clientInfo.name,
-            gender: clientInfo.gender,
-            age: clientInfo.age,
-            money: clientInfo.money,
-            visitedEvents: 0,
-            vip: false,
-        }
-
-        EventOrganizerDB.insertClient(client);
-    },
-
-    showAllClients: function() {
-        if(EventOrganizerDB.clientsCollection.length == 0) {
-            console.log("Няма клиенти.");
-            return;
-        }
-
-        for(var i=0; i<EventOrganizerDB.clientsCollection.length; i++) {
-            var currentClientId = EventOrganizerDB.clientsCollection[i].id;
-            this.printClientInfo(currentClientId);
-        }
-    },
-
-    addClientToEvent: function(eventId, clientId) {
-        event = EventOrganizerDB.getEventById(eventId);
-        client = EventOrganizerDB.getClientById(clientId);
-
-        if(event.isArchived) {
-            console.log("Не може да добавяте клиенти към събитието '" + event.name + "', защото е архивирано.");
-            return;
-        }
-
-        if(event != undefined && client != undefined) {
-            if(event.isForAdults) {
-                if(client.age < 18) {
-                    console.log("Събитието " + event.name + " е само за пълнолетни." + client.name + " е на " + client.age + " години.");
-                    return;
-                }
-            }
-
-            // проверяваме колко събития е посетил клиента (за да го направим VIP)
-            client.visitedEvents++;
-            if(client.visitedEvents > 5) {
-                client.isVip = true;
-            }
-            
-
-            // ако събитието е платено
-            if(event.price > 0) {
-                if(client.money > event.price) {
-                    if(client.isVip) {
-                        client.money -= event.price;
-                    }
-                    event.totalIncome += event.price;
-                } else {
-                    console.log("Клиента " + client.name + " няма достатъчно пари за да посети събитието '" + event.name + "'. Не и достигат " + (event.price-client.money) + "лв.");
-                    return;
-                }
-            }
-
-            // нулираме посещенията ако са повече от 5
-            if(client.visitedEvents > 5) {
-                client.visitedEvents = 0;
-                client.isVip = false;
-            }
-
-            event.clientsCollection.push(client);
-        }
-    },
-
-    removeClientFromEvent: function(eventId, clientId) {
-        event = EventOrganizerDB.getEventById(eventId);
-
-        if(event.isArchived) {
-            console.log("Не може да премахвате клиенти от събитието '" + event.name + "', защото е архивирано.");
-            return;
-        }
-
-        for(var i=0; i<event.clientsCollection.length; i++) {
-            if(event.clientsCollection[i].id == clientId) {
-                event.clientsCollection.splice(i, 1);
-
-                // връщаме парите на клиента
-                var client = EventOrganizerDB.getClientById(clientId);
-                client.money += event.price;
-                client.visitedEvents--;
-
-                // махаме сумата на клиента от общия приход на събитието
-                event.totalIncome -= event.price;
-            }
-        }
-    },
-
-    printEventInfo: function(eventId) {
-        event = EventOrganizerDB.getEventById(eventId);
-
-        var isForAdultsString = "За всички";
-        if(event.isForAdults) {
-            isForAdultsString = "За пълнолетни";
-        }
-
-        var date = "";
-        if(event.date != "Invalid Date") {
-            date = event.date.toISOString().substring(0, 10);
-        }
-
-        var identifier;
-
-        if(event.isArchived) {
-            identifier = "~";
-        } else
-        if(event.price > 0) {
-            identifier = "$";
-        } else 
-        if(event.price == 0) {
-            identifier = "!";
-        }
-
-        var rating;
-
-        if(event.isArchived) {
-            // смятаме рейтинга и го преобразуваме от min(0)-max(10) към min(0)-max(6)
-            var rating = (event.totalRating/event.clientsCollection.length) * 6/10;
-        } else {
-            rating = "Предстои актуализация за рейтинга";
-        }
-
-        var eventInfo = event.id + ". " + identifier +  event.name + ": " + isForAdultsString + ". " + event.price + "лв. " + "Общ приход: " + event.totalIncome + "лв. Рейтинг: " + rating + ". " + date;
-        return eventInfo;
-    },
-
-    printClientInfo: function(clientId) {
-        var client = EventOrganizerDB.getClientById(clientId);
-
-        var isVip = "";
-        if(client.isVip) {
-            isVip = "VIP";
-        }
-
-        var clientInfo = client.id + ". " + client.name + ", " + client.gender + ", " + client.age + ", " + client.money + "лв. " + client.visitedEvents + "/5 посетени събития. " + isVip;
-        console.log(clientInfo);
-    },
-
-    showClientListForEvent: function(eventId, gender) {
+    archiveEvent: function(eventId) {
         var event = EventOrganizerDB.getEventById(eventId);
 
-        if(event == undefined) return;
-
-        for(var i = 0; i<event.clientsCollection.length; i++) {
-            var client = event.clientsCollection[i];
-            if(gender == undefined || client.gender == gender) {
-                this.printClientInfo(client.id);
-            }
+        if(event == undefined) {
+            return;
         }
+
+        event.isArchived = true;
     },
 
     changeEventName: function(eventId, nameParam) {
@@ -339,12 +177,29 @@ var EventOrganizer = {
         event.price = priceParam;
     },
 
-    removeAllChildsFromEvent: function(event) {
-        for(var i = 0; i<event.clientsCollection.length; i++) {
+    rateEvent: function(eventId, clientId, rating) {
+        var event = EventOrganizerDB.getEventById(eventId);
+        var client = EventOrganizerDB.getClientById(clientId);
+
+        if(!event.isArchived) {
+            return;
+        }
+
+        if(rating<0 || rating >10) {
+            return;
+        }
+
+        var wasClient = false; // дали клиента е бил посетител на събитието
+        for(var i=0; i<event.clientsCollection.length; i++) {
             var currentClient = event.clientsCollection[i];
-            if(currentClient.age < 18) {
-                this.removeClientFromEvent(event.id, currentClient.id);
+            if(currentClient == client) {
+                wasClient = true;
+                break;
             }
+        }
+
+        if(wasClient) {
+            event.totalRating += rating;
         }
     },
 
@@ -372,40 +227,203 @@ var EventOrganizer = {
         console.log("Събитието '" + eventWithTheMostClients.name + "' има най-много клиенти - " + eventWithTheMostClients.clientsCollection.length)
     },
 
-    archiveEvent: function(eventId) {
-        var event = EventOrganizerDB.getEventById(eventId);
+    printEventInfo: function(eventId) {
+        event = EventOrganizerDB.getEventById(eventId);
 
-        if(event == undefined) {
-            return;
+        var isForAdultsString = "За всички";
+        if(event.isForAdults) {
+            isForAdultsString = "За пълнолетни";
         }
 
-        event.isArchived = true;
+        var date = "";
+        if(event.date != "Invalid Date") {
+            date = event.date.toISOString().substring(0, 10);
+        }
+
+        var identifier;
+
+        if(event.isArchived) {
+            identifier = "~";
+        } else
+        if(event.price > 0) {
+            identifier = "$";
+        } else 
+        if(event.price == 0) {
+            identifier = "!";
+        }
+
+        var rating;
+
+        if(event.isArchived) {
+            // смятаме рейтинга и го преобразуваме от min(0)-max(10) към min(0)-max(6)
+            var rating = (event.totalRating/event.clientsCollection.length) * 6/10;
+        } else {
+            rating = "Предстои актуализация за рейтинга";
+        }
+
+        var eventInfo = event.id + ". " + identifier +  event.name + ": " + isForAdultsString + ". " + event.price + "лв. " + "Общ приход: " + event.totalIncome + "лв. Рейтинг: " + rating + ". " + date;
+        return eventInfo;
     },
 
-    rateEvent: function(eventId, clientId, rating) {
-        var event = EventOrganizerDB.getEventById(eventId);
+    // #######################################################
+
+
+
+
+    // Клиенти ###############################################
+
+    /**
+     * 
+     * Получава колекция от вида
+     * 
+     * var collection = {
+     *   name: "Име Фамилия",
+     *   gender: m/f,
+     *   age: 12,
+     *   moeny: 100.30, 
+     * }
+     */
+    createClient: function(clientInfo) {
+        if(EventOrganizerConfig.SYSTEM_CLOSED) {
+            console.log("Не може да добавите клиент. Системата е затворена.");
+            return;
+        }
+
+        var client = {
+            name: clientInfo.name,
+            gender: clientInfo.gender,
+            age: clientInfo.age,
+            money: clientInfo.money,
+            visitedEvents: 0,
+            vip: false,
+        }
+
+        EventOrganizerDB.insertClient(client);
+    },
+
+    showAllClients: function() {
+        if(EventOrganizerDB.clientsCollection.length == 0) {
+            console.log("Няма клиенти.");
+            return;
+        }
+
+        for(var i=0; i<EventOrganizerDB.clientsCollection.length; i++) {
+            var currentClientId = EventOrganizerDB.clientsCollection[i].id;
+            this.printClientInfo(currentClientId);
+        }
+    },
+
+    printClientInfo: function(clientId) {
         var client = EventOrganizerDB.getClientById(clientId);
 
-        if(!event.isArchived) {
+        var isVip = "";
+        if(client.isVip) {
+            isVip = "VIP";
+        }
+
+        var clientInfo = client.id + ". " + client.name + ", " + client.gender + ", " + client.age + ", " + client.money + "лв. " + client.visitedEvents + "/5 посетени събития. " + isVip;
+        console.log(clientInfo);
+    },
+
+    // #######################################################
+
+    
+
+    
+    // Общи ##################################################
+
+    addClientToEvent: function(eventId, clientId) {
+        event = EventOrganizerDB.getEventById(eventId);
+        client = EventOrganizerDB.getClientById(clientId);
+
+        if(event.isArchived) {
+            console.log("Не може да добавяте клиенти към събитието '" + event.name + "', защото е архивирано.");
             return;
         }
 
-        if(rating<0 || rating >10) {
+        if(event != undefined && client != undefined) {
+            if(event.isForAdults) {
+                if(client.age < 18) {
+                    console.log("Събитието " + event.name + " е само за пълнолетни." + client.name + " е на " + client.age + " години.");
+                    return;
+                }
+            }
+
+            // проверяваме колко събития е посетил клиента (за да го направим VIP)
+            client.visitedEvents++;
+            if(client.visitedEvents > 5) {
+                client.isVip = true;
+            }
+            
+
+            // ако събитието е платено
+            if(event.price > 0) {
+                if(client.money > event.price) {
+                    if(client.isVip) {
+                        client.money -= event.price;
+                    }
+                    event.totalIncome += event.price;
+                } else {
+                    console.log("Клиента " + client.name + " няма достатъчно пари за да посети събитието '" + event.name + "'. Не му достигат " + (event.price-client.money) + "лв.");
+                    return;
+                }
+            }
+
+            // нулираме посещенията ако са повече от 5
+            if(client.visitedEvents > 5) {
+                client.visitedEvents = 0;
+                client.isVip = false;
+            }
+
+            event.clientsCollection.push(client);
+        }
+    },
+
+    removeClientFromEvent: function(eventId, clientId) {
+        event = EventOrganizerDB.getEventById(eventId);
+
+        if(event.isArchived) {
+            console.log("Не може да премахвате клиенти от събитието '" + event.name + "', защото е архивирано.");
             return;
         }
 
-        var wasClient = false; // дали клиента е бил посетител на събитието
         for(var i=0; i<event.clientsCollection.length; i++) {
-            var currentClient = event.clientsCollection[i];
-            if(currentClient == client) {
-                wasClient = true;
-                break;
+            if(event.clientsCollection[i].id == clientId) {
+                event.clientsCollection.splice(i, 1);
+
+                // връщаме парите на клиента
+                var client = EventOrganizerDB.getClientById(clientId);
+                client.money += event.price;
+                client.visitedEvents--;
+
+                // махаме сумата на клиента от общия приход на събитието
+                event.totalIncome -= event.price;
             }
         }
+    },
 
-        if(wasClient) {
-            event.totalRating += rating;
+    showClientListForEvent: function(eventId, gender) {
+        var event = EventOrganizerDB.getEventById(eventId);
+
+        if(event == undefined) return;
+
+        for(var i = 0; i<event.clientsCollection.length; i++) {
+            var client = event.clientsCollection[i];
+            if(gender == undefined || client.gender == gender) {
+                this.printClientInfo(client.id);
+            }
         }
-    }
+    },
+
+    removeAllChildsFromEvent: function(event) {
+        for(var i = 0; i<event.clientsCollection.length; i++) {
+            var currentClient = event.clientsCollection[i];
+            if(currentClient.age < 18) {
+                this.removeClientFromEvent(event.id, currentClient.id);
+            }
+        }
+    },
+
+    // #######################################################
 
 };
