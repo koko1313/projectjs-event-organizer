@@ -14,7 +14,7 @@
 ```javascript
 EventOrganizer.createEvent({
     name: "Име на партито",
-    isForAdults: true, // true - за пълнолетни / false - за непълнолетни, не е задължително
+    isForAdults: true, // true - за пълнолетни / false - за непълнолетни, не е задължително (по подразбиране е за непълнолетни)
     date: "2019-01-26", // формат на датата: yyyy-mm-dd, не е задължително
     price: 10, // не е задължително
 });
